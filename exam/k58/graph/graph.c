@@ -547,37 +547,3 @@ double shortest_path(Graph G, int s, int t, int* path, double* length) {
 	free(prev);
 	return ret;
 }
-
-Dllist _topological_queue;
-
-void _get_topological_id(Graph G, int v){
-	// log("%s->", get_vertex_val(G, v));
-	dll_append(_topological_queue, new_jval_i(v));
-}
-
-void get_topological_queue(Graph G, int *output, int *length){
-	// log("[lib] at get_topological_queue:\n");
-	_topological_queue = new_dllist();
-	topological_sort(G, _get_topological_id);
-	int i, total=0;
-	Dllist ptr;
-	dll_traverse(ptr, _topological_queue)
-		output[total++] = jval_i(ptr->val);
-	free_dllist(_topological_queue);
-	*length = total;
-	// log("\n");
-}
-
-int count_prerequisites(Graph G, int v){
-	int *output = (int*)malloc(sizeof(int) * count_vertices(G));
-	int length;
-	get_topological_queue(G, output, &length);
-	int count = 0, i;
-	for(i=0; i<length; i++){
-		if(output[i]==v)
-			break;
-		count++;
-	}
-	free(output);
-	return count;
-}

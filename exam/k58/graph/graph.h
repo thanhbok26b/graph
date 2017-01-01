@@ -19,38 +19,26 @@ typedef struct Graph{
 }Graph;
 
 Graph create_graph ();
-
 void add_vertex(Graph G, int id, char *name);
 void add_vertex_auto_increment(Graph G, char *name);
 char *get_vertex_val(Graph G, int id);
 int get_vertex_id(Graph G, char *name);
 int count_vertices(Graph G);
 int get_vertices_id(Graph G, int *output);
-
 void add_edge(Graph G, int v, int v2, double weight, short mode);
 int has_edge(Graph G, int v, int v2);
 double get_edge_val(Graph G, int v, int v2);
 int count_edges(Graph G, short mode);
-
 int is_adjacent(Graph G, int v, int v2);
 int get_adjacent_vertices(Graph G, int v, int *output);
 int count_adjacent(Graph G, int v);
-
 int out_degree(Graph G, int v, int *output);
 int in_degree(Graph G, int v, int *output);
-
 void drop_graph(Graph *G);
-
 void bfs(Graph G, int start, int stop, void (*visited_func)(Graph, int));
 void dfs(Graph G,  int start, int stop, void (*visited_func)(Graph, int));
-
 int get_graph_max_id(Graph G);
 int get_graph_min_id(Graph G);
-
 int is_cyclic(Graph G);
-
 void topological_sort(Graph G, void (*visited_func)(Graph, int));
-void get_topological_queue(Graph G, int *output, int *length);
-int count_prerequisites(Graph G, int v);
-
 double shortest_path(Graph G, int s, int t, int* path, double* length);

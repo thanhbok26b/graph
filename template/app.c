@@ -2,90 +2,101 @@
 #include "libfdr/fields.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 Graph G;
 #include "api.h"
 
 int main(){
 	/*
 	@ import raw data
+	@ also add raw data to graph
+	--------------------------------
 	*/
 	IS is;
-	int i, matrix[5][5];
-	is = new_inputstruct("testcase.txt");
-	while(get_line(is) >= 0)
-		for(i=0; i < is->NF; i++){
-			log("matrix[%d][%d]=\"%s\"\n", is->line, i, is->fields[i]);
-			matrix[is->line-1][i] = atoi(is->fields[i]);
-		}
+	char fn[100] = "testcase.txt";
+	int n, i, j, k;
+	char *name1, *name2, *name;
+	name1 = (char*)malloc(sizeof(char)*10);
+	name2 = (char*)malloc(sizeof(char)*10);
+	int v1, v2;
+	int m;
+	int id, *output;
+	G = create_graph();
 
 	/*
-	@ add raw data to graph
+	@ Nhap file tu ban phim
+	--------------------------------
+	printf("[+] enter file name:");
+	scanf("%s", fn);
 	*/
+
+	is = new_inputstruct(fn);
+	if(!is){
+		printf("error");
+		return 1;
+	}
+
+	if(get_line(is) >= 0){
+		// log("line=%s\n", is->fields[0]);
+		n = atoi(is->fields[0]);
+	}
+
+	if(G.vertices || G.edges)
+		drop_graph(&G);
 	G = create_graph();
-	add_all_vertex(G, matrix);
-	add_all_edge(G, matrix);
-	
+
+	for(j=0; j<n; j++){
+		get_line(is);
+
+		// add all vertices
+		for(i=0; i < is->NF; i++){
+			// log("data[%d][%d]='%s'\n", is->line, i, is->fields[i]);
+			// name = (char*)malloc(sizeof(char)*10);
+			// strcpy(name, is->fields[i]);
+			// add_vertex_auto_increment(G, name);
+			// log("add vertex: %s\n", name);
+		}
+		// add all edges
+		for(i=0; i < is->NF-1; i++){
+			// strcpy(name1, is->fields[i]);
+			// strcpy(name2, is->fields[i+1]);
+			// add_edge(G, get_vertex_id(G, name1), get_vertex_id(G, name2),1, DIRECTED);
+			// log("add edge: '%s'->'%s'\n", name1, name2, count_edges(G, DIRECTED));
+		}
+	}
+	// log("import data success!\n");
+	// printf("[+] Summary:\n");
+	// printf("   - All vertices:\n");
+	// print_all_vertices(G);
+	// printf("   - Number of subject:%d\n", count_vertices(G));
+	// printf("   - Number of relation:%d\n", count_edges(G, DIRECTED));
+
+
 	/*
 	@ main menu
 	*/
-	int m;
-	int id, *output;
-	char s[100];
-	char s1[100], s2[100];
-	int v1, v2;
+
 	do{
 		menu();
 		printf("choose:");
 		scanf("%d", &m);
 		switch(m){
 			case 1:
-				print_all_vertex(G);
 				break;
 			case 2:
-				printf("total vertices: %d\n", count_vertices(G));
-				printf("total edge    : %d\n", count_edges(G, UNDIRECTED));
 				break;			
 			case 3:
-				printf("enter vertex name:");
-				scanf("%s", s);
-				id = get_vertex_id(G, s);
-				if(id < 0)
-					printf("    [!] vertex '%s' not existed!\n", s);
-				else
-					print_all_adjacent(G, id);
-				break;
-			case 4:
-				printf("List of node with more flux:\n");
-				output = (int*)malloc(sizeof(int ) * count_vertices(G));
-				get_vertices_id(G, output);
-				qsort(output, count_vertices(G), sizeof(int), _increase_cmp);
-				for(i=0; i < count_vertices(G); i++)
-					printf("   - %d %s\n", count_adjacent(G, output[i]), get_vertex_val(G, output[i]));
-				free(output);
 				break;
 			case 5:
-				printf("List of node with no flux:\n");
-				output = (int*)malloc(sizeof(int ) * count_vertices(G));
-				get_vertices_id(G, output);
-				for(i=0; i < count_vertices(G); i++)
-					if(count_adjacent(G, output[i])==0)
-						printf("    - %d %s\n", count_adjacent(G, output[i]), get_vertex_val(G, output[i]));
-				free(output);
 				break;
 			case 6:
-				printf("start point:");
-				scanf("%s", s1);
-				printf("end point:");
-				scanf("%s", s2);
-				v1 = get_vertex_id(G, s1);
-				v2 = get_vertex_id(G, s2);			
-				print_shortest_path(G, v1, v2);
-			case 8:
+				break;
+			case 7:
 				break;
 			default:
 				printf("error!\n");
 		}
-	}while(m!=8);	
+	}while(m!=7);
 
 	jettison_inputstruct(is);
 	return 0;

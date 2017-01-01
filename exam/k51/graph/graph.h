@@ -9,8 +9,10 @@
 #define DIRECTED 1
 #define INFINITY 2147483647
 #define UNDEFINED -1
-// #define log(...) printf("[+]" __VA_ARGS__)
-#define log(...) printf("")
+// #define log(...) printf("")
+#ifndef log
+	#define log(...) printf("[+]" __VA_ARGS__)
+#endif
 
 typedef struct Graph{
 	JRB vertices;
