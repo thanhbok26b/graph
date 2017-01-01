@@ -11,6 +11,10 @@ void menu(){
 	puts("");
 	puts("----------MENU----------");
 	puts("1) Import data to graph");
+	puts("2) Show info of job must be done");
+	puts("3) Show list of job sorted by topo");
+	puts("4) Show minimum time to accomplist a job");
+	puts("5) Validate data");
 	puts("6) Quit");
 }
 
@@ -18,7 +22,7 @@ void _index_to_name(int i, char *name){
 	sprintf(name, "%d", i);
 }
 
-int scan_int(const char *s){//ok
+int scan_int(const char *s){
 	printf("%s", s);
 	char temp[100];
 	scanf("%[^\n]s", temp);
@@ -26,7 +30,7 @@ int scan_int(const char *s){//ok
 	return atoi(temp);
 }
 
-int scan_char(const char *s){//ok
+int scan_char(const char *s){
 	printf("%s", s);
 	char temp[100];
 	scanf("%[^\n]s", temp);
@@ -37,15 +41,15 @@ int scan_char(const char *s){//ok
 void add_all_vertices(Graph G, char *fn){
 	IS is = new_inputstruct(fn);
 	if(!is){
-		printf("input file error!\n");
+		printf("error!\n");
 		return;
 	}
 	char *name;
 	while(get_line(is) >= 0){
-		// name = (char*)malloc(sizeof(char)*10);
-		log("%s", is->fields[0]);
-		// add_vertex_auto_increment(G, name);
-		// log("add vertex: '%s'\n", name);
+		name = (char*)malloc(sizeof(char)*10);
+		strcpy(name, is->fields[0]);
+		add_vertex_auto_increment(G, name);
+		log("add vertex: '%s'\n", name);
 	}
 	jettison_inputstruct(is);
 }
@@ -62,28 +66,23 @@ void add_all_edges(Graph G, char *fn){
 	char *token;
 	char temp[100];
 	while(get_line(is) >= 0){
-		for(i=0; i<is->NF; i++){
-			log("data[%d][%d]=%s\n", is->line, i);
+		strcpy(name2, is->fields[0]);
+		for(i=2; i<is->NF; i++){
+			strcpy(temp, is->fields[i]);
+			token = strtok(temp, "-");
+			if(token){
+				strcpy(name1, token);
+				token = strtok(NULL, "-");
+				w = atof(token);
+				v1 = get_vertex_id(G, name1);
+				v2 = get_vertex_id(G, name2);
+				if(v1 < 0 || v2 < 0)
+					continue;
+				add_edge(G, v1, v2, w, DIRECTED);
+				log("add edge %s -> %s weight=%f\n", name1, name2, w);	
+			}
 		}
 	}
-	// while(get_line(is) >= 0){
-	// 	strcpy(name2, is->fields[0]);
-	// 	for(i=2; i<is->NF; i++){
-	// 		strcpy(temp, is->fields[i]);
-	// 		token = strtok(temp, "-");
-	// 		if(token){
-	// 			strcpy(name1, token);
-	// 			token = strtok(NULL, "-");
-	// 			w = atof(token);
-	// 			v1 = get_vertex_id(G, name1);
-	// 			v2 = get_vertex_id(G, name2);
-	// 			if(v1 < 0 || v2 < 0)
-	// 				continue;
-	// 			add_edge(G, v1, v2, w, DIRECTED);
-	// 			log("add edge %s -> %s weight=%f\n", name1, name2, w);	
-	// 		}
-	// 	}
-	// }
 	jettison_inputstruct(is);
 }
 

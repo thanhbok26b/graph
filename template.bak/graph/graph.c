@@ -50,6 +50,7 @@ int get_vertices_id(Graph G, int *output){
 	return total;
 }
 
+
 int count_vertices(Graph G){
 	JRB node, tree;
 	tree = G.vertices;
@@ -94,13 +95,9 @@ int has_edge(Graph G, int v, int v2) {
 	return false;
 }
 
-double get_edge_weight(Graph G, int v, int v2) {
-	if (v == v2)
-		if (!has_edge(G, v, v2))
-			return 0;
-	else
-		if (!has_edge(G, v, v2))
-			return INFINITY;
+double get_edge_val(Graph G, int v, int v2) {
+	if (!has_edge(G, v, v2))
+		return INFINITY;
 	JRB node = jrb_find_int(G.edges, v);
 	JRB tree = (JRB) jval_v(node->val);
 	JRB f = jrb_find_int(tree, v2);
@@ -130,32 +127,6 @@ int is_adjacent(Graph G, int v, int v2){
 	if(f != NULL)
 		return true;
 	return false;
-}
-
-int get_adjacent_vertices_out_edge(Graph G, int v, int *output){
-	JRB node = jrb_find_int(G.edges, v);
-	JRB tree;
-	if(node == NULL)
-		return 0;
-	tree = (JRB) jval_v(node->val);
-	int total = 0;
-	jrb_traverse(node, tree){
-		output[total++] = jval_i(node->key);		
-	}
-	return total;
-}
-
-int get_adjacent_vertices_in_edge(Graph G, int v2, int *output){
-	JRB node_v;
-	int v;
-	int total = 0;
-	jrb_traverse(node_v, G.vertices){
-		v = jval_i(node_v->key);
-		if(is_adjacent(G, v, v2)){
-			output[total++] = v;
-		}
-	}
-	return total;
 }
 
 int get_adjacent_vertices(Graph G, int v, int *output){
@@ -488,9 +459,6 @@ double shortest_path(Graph G, int s, int t, int* path, double* length) {
 		return INFINITY;		
 	}
 
-	if (s==t)
-		return 0;
-
 	int i, max_id = get_graph_max_id(G);
 	int min_id = get_graph_min_id(G);
 
@@ -548,7 +516,7 @@ double shortest_path(Graph G, int s, int t, int* path, double* length) {
 		int i;
 		for (i = 0; i < out_degree_u; i++) {
 			int v = out_degree_u_list[i];
-			double alt = dist[u] + get_edge_weight(G, u, v);
+			double alt = dist[u] + get_edge_val(G, u, v);
 			if (alt < dist[v]) {
 				dist[v] = alt;
 				prev[v] = u;
@@ -573,7 +541,7 @@ double shortest_path(Graph G, int s, int t, int* path, double* length) {
 		path[++j] = -1;
 	}
 	double ret = dist[t];
-
+	//
 	free_dllist(queue);
 	free(dist);
 	free(prev);
@@ -600,7 +568,7 @@ void get_topological_queue(Graph G, int *output, int *length){
 	// log("\n");
 }
 
-int count_prequisites(Graph G, int v){
+int count_prerequisites(Graph G, int v){
 	int *output = (int*)malloc(sizeof(int) * count_vertices(G));
 	int length;
 	get_topological_queue(G, output, &length);
@@ -612,47 +580,4 @@ int count_prequisites(Graph G, int v){
 	}
 	free(output);
 	return count;
-}
-
-double get_path_weight(Graph G, int *path, int total){
-	int i, w, total_w=0;
-	for(i=0; i<total-1; i++){
-		w = get_edge_weight(G, path[i], path[i+1]);
-		if(w == INFINITY)
-			return INFINITY;
-		total_w += w;
-	}
-	return total_w;
-}
-
-double get_path_weight_v2(Graph G, int *path){
-	int i, w, total_w=0;
-	for(i=0; path[i]>=0; i++){
-		printf("%d\n", path[i]);
-	}
-	for(i=0; path[i+1]>= 0; i++){
-		w = get_edge_weight(G, path[i+1], path[i]);
-		if(w >= INFINITY-1)
-			return INFINITY;
-		total_w += w;
-	}
-	return total_w;
-}
-
-double topological_get_minimun_cost(Graph G, int v2){
-	int *output, n, v, total;
-	double *length;
-	n = count_vertices(G);
-
-	output = (int*)malloc(sizeof(int) * n);
-	get_topological_queue(G, output, &total);
-	v = output[0];
-	free(output);
-
-	output = (int*)malloc(sizeof(int) * n);
-	length = (double*)malloc(sizeof(double) * 100);
-	shortest_path(G, v, v2, output, length);
-	free(length);
-	free(output);
-	return get_path_weight_v2(G, output);
 }
