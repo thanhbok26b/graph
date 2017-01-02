@@ -15,94 +15,136 @@ int main(){
 	IS is;
 	char fn[100] = "testcase.txt";
 	int n, i, j, k;
+	char *name1, *name2, *name;
+	name1 = (char*)malloc(sizeof(char)*10);
+	name2 = (char*)malloc(sizeof(char)*10);
 	int v1, v2;
 	int m;
-	int v, *output, total;
-	char name[100], name1[100], name2[100];
+	int id, *output;
 	G = create_graph();
-	char again='y';
-	double *length, w;
+	char ctn;
+	int length;
 	/*
 	@ main menu
 	*/
 
 	do{
 		menu();
-		m = scan_int("choose:");
+		printf("choose:");
+		scanf("%d", &m);
 		switch(m){
 			case 1:
 				/*
 				@ Nhap file tu ban phim
 				--------------------------------
+				printf("[+] enter file name:");
+				scanf("%s", fn);
 				*/
-				// printf("[+] enter file name:");
-				// scanf("%s", fn);
 
-				/*
-				@ Import to graph
-				*/
-				// if(G.vertices || G.edges)
-				// 	drop_graph(&G);
-				// G = create_graph();
-				// add_all_vertices(G, fn);
-				// add_all_edges(G,fn);
+				is = new_inputstruct(fn);
+				if(!is){
+					printf("error");
+					return 1;
+				}
 
-				/*
-				@ Thong ke ket qua
-				*/
-				// printf("[+] Summary:\n");
-				// printf("   - All vertices:\n");
-				// print_all_vertices(G);
-				// printf("   - Number of subject:%d\n", count_vertices(G));
-				// printf("   - Number of relation:%d\n", count_edges(G, DIRECTED));
+				if(get_line(is) >= 0){
+					// log("line=%s\n", is->fields[0]);
+					n = atoi(is->fields[0]);
+				}
+
+				if(G.vertices || G.edges)
+					drop_graph(&G);
+				G = create_graph();
+
+				for(j=0; j<n; j++){
+					get_line(is);
+
+					// add all vertices
+					for(i=0; i < is->NF; i++){
+						// log("data[%d][%d]='%s'\n", is->line, i, is->fields[i]);
+						name = (char*)malloc(sizeof(char)*10);
+						strcpy(name, is->fields[i]);
+						add_vertex_auto_increment(G, name);
+						log("add vertex: %s\n", name);
+					}
+					// add all edges
+					for(i=1; i < is->NF; i++){
+						strcpy(name2, is->fields[0]);
+						strcpy(name1, is->fields[i]);
+						add_edge(G, get_vertex_id(G, name1), get_vertex_id(G, name2),1, DIRECTED);
+						log("add edge: '%s'->'%s'\n", name1, name2, count_edges(G, DIRECTED));
+					}
+				}
+				log("import data success!\n");
+				printf("[+] Summary:\n");
+				printf("   - All vertices:\n");
+				print_all_vertices(G);
+				printf("   - Number of subject:%d\n", count_vertices(G));
+				printf("   - Number of relation:%d\n", count_edges(G, DIRECTED));
 				break;
 			case 2:
-				// while(again!='n'){
-				// 	printf("[+] Enter job name:");
-				// 	scanf("%s", name);
-				// 	getchar();
-				// 	v = get_vertex_id(G, name);
-				// 	if (v < 0){
-				// 		printf("    error: could not find '%s'\n", name);
-				// 		goto end;
-				// 	}
-				// 	else{
-				// 		output = (int*)malloc(sizeof(int) * count_vertices(G));
-
-				// 		total = get_adjacent_vertices_in_edge(G, v, output);
-				// 		printf("[+] Info of job must be done first:\n");
-				// 		printf("    - total number of job: %d\n", total);
-				// 		printf("    - list of job:\n");
-				// 		for(i=0; i<total; i++)
-				// 			printf("        '%s'\n", get_vertex_val(G, output[i]));
-
-				// 		get_topological_queue(G, output, &total);
-				// 		n = count_prequisites(G, v);
-				// 		printf("    Info of all jobs must be done before:\n");
-				// 		printf("    - total number of job: %d\n", n);
-				// 		printf("    - list of job:\n");
-				// 		for(i=0; i<n; i++)
-				// 			printf("        '%s'\n", get_vertex_val(G, output[i]));
-
-				// 		free(output);
-				// 	}
-				// 	end:
-				// 		again = scan_char("Do you wanna continue?[press 'n' to stop]");
-				// }
-				// again = 'y';
-				break;
+				printf("[+] Checking cyclic property:");
+				if(is_cyclic(G))
+					printf(" invalid (graph is cyclic)\n");
+				else
+					printf(" ok (graph is not cyclic)\n");
+				break;			
 			case 3:
-				break;
-			case 4:
+				ctn = 'y';
+				while(ctn!='n'){
+					// Input name of subject
+					name = (char*)malloc(sizeof(char) * 10);
+					printf("[+] Enter subject:");
+					scanf("%s", name);
+					id = get_vertex_id(G, name);
+					if (id < 0){
+						printf("    - Subject does not exist\n");
+						free(name);
+						break;
+					}
+					else{
+						free(name);
+						// Perform topological sort
+						// Print all subject before choosen subject
+						printf("      - Prerequisite of subject:");
+						output = (int*)malloc(sizeof(int)*count_vertices(G));
+						get_topological_queue(G, output, &length);
+
+						for(i=0; i < length; i++){
+							printf("%s->", get_vertex_val(G, output[i]));
+							if(output[i] == id)
+								break;
+						}
+						putchar('\n');
+						free(output);								
+					}
+					printf("do you wanna continue[Y/n]?");
+					getchar();
+					scanf("%c", &ctn);
+				}
 				break;
 			case 5:
+				printf("[+] List of subjects sort by number of prerequisites ascending:\n");
+				output = (int*)malloc(sizeof(int ) * count_vertices(G));
+				get_vertices_id(G, output);
+				qsort(output, count_vertices(G), sizeof(int), _asc_cmp);
+				for(i=0; i < count_vertices(G); i++)
+					printf("   - Subject: %s, number of prerequisites %d\n", 
+						get_vertex_val(G, output[i]), count_prerequisites(G, output[i]));
+				free(output);
 				break;
 			case 6:
+				printf("[+] List of subjects order sort by topo:\n");
+				topological_sort(G, menu6);
+				break;
+			case 7:
+				printf("[+] Exiting\n");
 				break;
 			default:
 				printf("error!\n");
 		}
-	}while(m!=6);
+	}while(m!=7);
 
+	jettison_inputstruct(is);
 	return 0;
 }

@@ -1,90 +1,33 @@
-void add_all_vertices(Graph G, char *fn);
-void add_all_edges(Graph G, char *fn);
+void add_all_vertex(Graph G, int matrix[][5]);
+void add_all_edge(Graph G, int matrix[][5]);
 void print_all_vertex(Graph G);
 void print_all_adjacent(Graph G, int v);
 void print_shortest_path(Graph G, int v, int v2);
 int _increase_cmp(const void *a, const void *b);
-int scan_int(const char *s);
+void get_topological_queue(Graph G, int *output, int *length);
+int count_prerequisites(Graph G, int v);
 void menu();
+void menu6(Graph G, int v);
 
 void menu(){
 	puts("");
 	puts("----------MENU----------");
 	puts("1) Import data to graph");
-	puts("6) Quit");
+	puts("7) Quit");
 }
 
 void _index_to_name(int i, char *name){
 	sprintf(name, "%d", i);
 }
 
-int scan_int(const char *s){//ok
-	printf("%s", s);
-	char temp[100];
-	scanf("%[^\n]s", temp);
-	getchar();
-	return atoi(temp);
+void add_all_vertex(Graph G, int matrix[][5]){
+	log("[+] adding all vertex\n");
+	log("[+] success!\n");
 }
 
-int scan_char(const char *s){//ok
-	printf("%s", s);
-	char temp[100];
-	scanf("%[^\n]s", temp);
-	getchar();
-	return temp[0];
-}
-
-void add_all_vertices(Graph G, char *fn){
-	IS is = new_inputstruct(fn);
-	if(!is){
-		printf("input file error!\n");
-		return;
-	}
-	char *name;
-	while(get_line(is) >= 0){
-		// name = (char*)malloc(sizeof(char)*10);
-		log("%s", is->fields[0]);
-		// add_vertex_auto_increment(G, name);
-		// log("add vertex: '%s'\n", name);
-	}
-	jettison_inputstruct(is);
-}
-
-void add_all_edges(Graph G, char *fn){
-	IS is = new_inputstruct(fn);
-	if(!is){
-		printf("error!\n");
-		return;
-	}
-	char name1[10], name2[10];
-	int v1, v2, i;
-	double w;
-	char *token;
-	char temp[100];
-	while(get_line(is) >= 0){
-		for(i=0; i<is->NF; i++){
-			log("data[%d][%d]=%s\n", is->line, i);
-		}
-	}
-	// while(get_line(is) >= 0){
-	// 	strcpy(name2, is->fields[0]);
-	// 	for(i=2; i<is->NF; i++){
-	// 		strcpy(temp, is->fields[i]);
-	// 		token = strtok(temp, "-");
-	// 		if(token){
-	// 			strcpy(name1, token);
-	// 			token = strtok(NULL, "-");
-	// 			w = atof(token);
-	// 			v1 = get_vertex_id(G, name1);
-	// 			v2 = get_vertex_id(G, name2);
-	// 			if(v1 < 0 || v2 < 0)
-	// 				continue;
-	// 			add_edge(G, v1, v2, w, DIRECTED);
-	// 			log("add edge %s -> %s weight=%f\n", name1, name2, w);	
-	// 		}
-	// 	}
-	// }
-	jettison_inputstruct(is);
+void add_all_edge(Graph G, int matrix[][5]){
+	log("adding all edge\n");
+	log("[+] success!\n");
 }
 
 void print_all_vertices(Graph G){//ok
@@ -123,12 +66,50 @@ void print_shortest_path(Graph G, int v, int v2){//ok
 int _asc_cmp(const void *a, const void *b){
 	int v1 = *(int*)a;
 	int v2 = *(int*)b;
-	int n1 = count_prequisites(G, v1);
-	int n2 = count_prequisites(G, v2);
+	int n1 = count_prerequisites(G, v1);
+	int n2 = count_prerequisites(G, v2);
 	if(n1 > n2)
 		return 1;
 	else if (n1 < n2)
 		return -1;
 	else
 		return 0;
+}
+
+Dllist _topological_queue;
+
+void _get_topological_id(Graph G, int v){
+	// log("%s->", get_vertex_val(G, v));
+	dll_append(_topological_queue, new_jval_i(v));
+}
+
+void get_topological_queue(Graph G, int *output, int *length){
+	// log("[lib] at get_topological_queue:\n");
+	_topological_queue = new_dllist();
+	topological_sort(G, _get_topological_id);
+	int i, total=0;
+	Dllist ptr;
+	dll_traverse(ptr, _topological_queue)
+		output[total++] = jval_i(ptr->val);
+	free_dllist(_topological_queue);
+	*length = total;
+	// log("\n");
+}
+
+int count_prerequisites(Graph G, int v){
+	int *output = (int*)malloc(sizeof(int) * count_vertices(G));
+	int length;
+	get_topological_queue(G, output, &length);
+	int count = 0, i;
+	for(i=0; i<length; i++){
+		if(output[i]==v)
+			break;
+		count++;
+	}
+	free(output);
+	return count;
+}
+
+void menu6(Graph G, int v){
+	printf("    %s\n", get_vertex_val(G, v));
 }

@@ -135,6 +135,10 @@ int main(){
 					printf("    error: could not find '%s'\n", name);
 					break;
 				}
+				else if(!strstr(name, "0") && !strstr(name, "4")){
+					printf("    error: not a cong vao\n");
+					break;
+				}
 				else{
 					n = count_vertices(G);
 					output = (int*)malloc(sizeof(int)*n);
@@ -145,8 +149,9 @@ int main(){
 					else{
 						for(i=0; i<m; i++){
 							strcpy(name, get_vertex_val(G, output[i]));
-							if(strstr(name, "0") || strstr(name, "5")){
-								printf("    - nearest exit is '%s'\n", name);
+							if(strstr(name, "0") || strstr(name, "4")){
+								printf("path:");
+								print_shortest_path(G, v, get_vertex_id(G, name));
 								break;
 							}
 						}

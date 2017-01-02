@@ -4,7 +4,9 @@ void print_all_vertex(Graph G);
 void print_all_adjacent(Graph G, int v);
 void print_shortest_path(Graph G, int v, int v2);
 int _increase_cmp(const void *a, const void *b);
+void print_list_vertices(Graph G, int *output, int n);
 int scan_int(const char *s);
+int scan_char(const char *s);
 void menu();
 
 void menu(){
@@ -69,15 +71,15 @@ void add_all_edges(Graph G, char *fn){
 	char name1[10], name2[10];
 	int i, j;
 	int v1, v2;
-	int matrix[6][6];
+	int matrix[5][5];
 	while(get_line(is) >= 0){
 		for(i=0; i<is->NF; i++){
 			matrix[is->line-1][i] = atoi(is->fields[i]);
 		}
 	}
 	
-	for(i=0; i<6; i++){
-		for(j=0; j<5; j++){
+	for(i=0; i<5; i++){
+		for(j=0; j<4; j++){
 			if(!matrix[i][j] && !matrix[i][j+1]){
 				_index_to_name(i, j, name1);
 				_index_to_name(i, j+1, name2);
@@ -88,8 +90,8 @@ void add_all_edges(Graph G, char *fn){
 			}
 		}
 	}
-	for(j=0; j<6; j++){
-		for(i=0; i<5; i++){
+	for(j=0; j<5; j++){
+		for(i=0; i<4; i++){
 			if(!matrix[i][j] && !matrix[i+1][j]){
 				_index_to_name(i, j, name1);
 				_index_to_name(i+1, j, name2);
@@ -106,8 +108,8 @@ void add_all_edges(Graph G, char *fn){
 void print_graph_as_matrix(Graph G){
 	int i, j;
 	char name[10];
-	for(i=0; i<6; i++){
-		for(j=0; j<6; j++){
+	for(i=0; i<5; i++){
+		for(j=0; j<5; j++){
 			_index_to_name(i, j, name);
 			if(get_vertex_id(G, name) >= 0){
 				printf("0 ");
