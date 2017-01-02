@@ -695,7 +695,7 @@ void _has_path(Graph G, int v){
 int has_path(Graph G, int s, int t){
 	_has_path_flag = false;
 	_has_path_t = t;
-	dfs(G, s, t, _has_path);
+	dfs(G, s, INFINITY, _has_path);
 	return _has_path_flag;
 }
 
@@ -836,19 +836,40 @@ int get_maximum_connected_part(Graph G, int *output){
 	queue = (int*)malloc(sizeof(int)*n);
 	get_vertices_id(G, queue);
 
-	log("coredump here\n");
-
 	// get one vertex in the flow (m_v)
 	// with max number of element m
 	int m=0, m_v=0, temp;
 	for(i=0; i<n; i++){
-		log("before , temp=%d queue[%d]=%d m_v=%d m=%d\n", temp, i, queue[i], m_v, m);
 		temp = _count_connected_vertices(G, queue[i]);
 		if(m < temp){
 			m_v = queue[i];
 			m = temp;
 		}
-		log("after , temp=%d queue[%d]=%d m_v=%d m=%d\n", temp, i, queue[i], m_v, m);
+	}
+
+	// copy the flow to output
+	int res = get_connected_vertices(G, m_v, output);
+
+	// free all and exit
+	free(queue);
+	return res;
+}
+int get_minimum_connected_part(Graph G, int *output){
+	// initialize
+	int n, i, *queue;
+	n = count_vertices(G);
+	queue = (int*)malloc(sizeof(int)*n);
+	get_vertices_id(G, queue);
+
+	// get one vertex in the flow (m_v)
+	// with max number of element m
+	int m=INFINITY, m_v=0, temp;
+	for(i=0; i<n; i++){
+		temp = _count_connected_vertices(G, queue[i]);
+		if(m > temp){
+			m_v = queue[i];
+			m = temp;
+		}
 	}
 
 	// copy the flow to output

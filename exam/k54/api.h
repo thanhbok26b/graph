@@ -70,10 +70,12 @@ void add_all_edges(Graph G, char *fn){
 	int i, j;
 	int v1, v2;
 	int matrix[6][6];
-	while(get_line(is) >= 0)
-		for(i=0; i<is->NF-1; i++){
+	while(get_line(is) >= 0){
+		for(i=0; i<is->NF; i++){
 			matrix[is->line-1][i] = atoi(is->fields[i]);
 		}
+	}
+	
 	for(i=0; i<6; i++){
 		for(j=0; j<5; j++){
 			if(!matrix[i][j] && !matrix[i][j+1]){
@@ -82,7 +84,7 @@ void add_all_edges(Graph G, char *fn){
 				v1 = get_vertex_id(G, name1);
 				v2 = get_vertex_id(G, name2);
 				add_edge(G, v1, v2, 1, UNDIRECTED);
-				log("add edge '%s' '%s'\n", name1, name2);
+				// log("add edge '%s' '%s'\n", name1, name2);
 			}
 		}
 	}
@@ -94,11 +96,10 @@ void add_all_edges(Graph G, char *fn){
 				v1 = get_vertex_id(G, name1);
 				v2 = get_vertex_id(G, name2);
 				add_edge(G, v1, v2, 1, UNDIRECTED);
-				log("add edge '%s' '%s'\n", name1, name2);
+				// log("add edge '%s' '%s'\n", name1, name2);
 			}
 		}
 	}
-
 	jettison_inputstruct(is);
 }
 

@@ -155,15 +155,17 @@ int main(){
 				}	
 				break;
 			case 6:
-				// n = count_vertices(G);
-				// output = (int*)malloc(sizeof(int)*n);
-				// m = get_maximum_connected_part(G, output);
-				// printf("[+] List of items in maximum connected part is:\n");
-				// print_list_vertices(G, output, m);
-				printf("_count_connected_vertices(G, 2):\n", m);
-				m = _count_connected_vertices(G, 3);
-				printf("_count_connected_vertices(G, 2)=%d\n", m);
-				// free(output);
+				n = count_vertices(G);
+				output = (int*)malloc(sizeof(int)*n);
+				printf("[+] List of items in maximum connected part is:\n");
+				m = get_maximum_connected_part(G, output);
+				print_list_vertices(G, output, m);
+
+				printf("[+] List of items in mimimum connected part is:\n");
+				m = get_minimum_connected_part(G, output);
+				print_list_vertices(G, output, m);
+
+				free(output);
 				break;
 			case 7:
 				puts("___Goodbye___");

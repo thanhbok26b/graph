@@ -74,3 +74,4 @@ int get_related_vertices_sorted_by_path_weight(Graph G, int v, int *output);
 int get_connected_vertices(Graph G, int v, int *output);
 int _count_connected_vertices(Graph G, int v);
 int get_maximum_connected_part(Graph G, int *output);
+int get_minimum_connected_part(Graph G, int *output);
