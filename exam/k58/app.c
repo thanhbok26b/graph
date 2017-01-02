@@ -68,9 +68,9 @@ int main(){
 						log("add vertex: %s\n", name);
 					}
 					// add all edges
-					for(i=0; i < is->NF-1; i++){
+					for(i=1; i < is->NF; i++){
+						strcpy(name2, is->fields[0]);
 						strcpy(name1, is->fields[i]);
-						strcpy(name2, is->fields[i+1]);
 						add_edge(G, get_vertex_id(G, name1), get_vertex_id(G, name2),1, DIRECTED);
 						log("add edge: '%s'->'%s'\n", name1, name2, count_edges(G, DIRECTED));
 					}
@@ -109,6 +109,7 @@ int main(){
 						printf("      - Prerequisite of subject:");
 						output = (int*)malloc(sizeof(int)*count_vertices(G));
 						get_topological_queue(G, output, &length);
+
 						for(i=0; i < length; i++){
 							printf("%s->", get_vertex_val(G, output[i]));
 							if(output[i] == id)

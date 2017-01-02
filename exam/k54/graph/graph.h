@@ -9,7 +9,7 @@
 #define DIRECTED 1
 #define INFINITY 2000000000
 #define UNDEFINED -1
-#define log(...) printf("")	
+// #define log(...) printf("")	
 #ifndef log
 	#define log(...) printf("[+]" __VA_ARGS__)
 #endif
@@ -71,3 +71,6 @@ double get_path_weight_v2(Graph G, int *path);
 double shortest_path_weight(Graph G, int s, int t);
 int get_related_vertices_sorted_by_path_weight(Graph G, int v, int *output);
 
+int get_connected_vertices(Graph G, int v, int *output);
+int _count_connected_vertices(Graph G, int v);
+int get_maximum_connected_part(Graph G, int *output);

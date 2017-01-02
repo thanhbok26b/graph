@@ -236,8 +236,8 @@ void drop_graph(Graph *G) {
 
 void bfs(Graph G, int start, int stop, void (*visited_func)(Graph, int)){
 	JRB tmp;
-	int max_id = get_graph_max_id(G);
-	int *visited = (int*)malloc((max_id + 1) * sizeof(int));
+	int _n = count_vertices(G);
+	int *visited = (int*)malloc((_n + 1) * sizeof(int));
 	if (visited == NULL) {
 		fprintf(stderr, "Allocated failed in %s:%d \n", __FILE__, __LINE__);
 		exit(1);
@@ -281,25 +281,32 @@ void bfs(Graph G, int start, int stop, void (*visited_func)(Graph, int)){
 		free(visited);
 		free_dllist(queue);
 }
-
 void dfs(Graph G,  int start, int stop, void (*visited_func)(Graph, int)) {
 	JRB tmp;
-	int max_id = get_graph_max_id(G);
+	int _n = count_vertices(G);
 
-	int *visited = (int*)malloc((max_id + 1) * sizeof(int));
-		if (visited == NULL) {
+	int *visited = (int*) malloc((_n+1) * sizeof(int));
+	if (visited == NULL) {
 		fprintf(stderr, "Allocated failed in %s:%d \n", __FILE__, __LINE__);
 		exit(1);
 	}
 
 	JRB node;
 	jrb_traverse(node, G.vertices)
+	{
 		visited[jval_i(node->key)] = 0;
+	}
+
 	Dllist stack = new_dllist();
 
-	node = jrb_find_int(G.edges, start);
+
+
+	// add start node to stack
+	node = jrb_find_int(G.vertices, start);
 	if (node == NULL)
 		goto end;
+
+
 	dll_append(stack, new_jval_i(start));
 
 	while (!dll_empty(stack)) {
@@ -313,7 +320,7 @@ void dfs(Graph G,  int start, int stop, void (*visited_func)(Graph, int)) {
 		}
 
 		if (u == stop)
-			goto end;
+			break;
 
 		JRB u_node = jrb_find_int(G.edges, u);
 		if (u_node == NULL)
@@ -323,14 +330,17 @@ void dfs(Graph G,  int start, int stop, void (*visited_func)(Graph, int)) {
 
 
 		jrb_rtraverse(tmp, vertex_connect_to_u_tree)
+		{
 			if (!visited[tmp->key.i])
 				dll_append(stack, new_jval_i(tmp->key.i));
+		}
 	}
 
 	end:
-	free(visited);
+	// free(visited);
 	free_dllist(stack);
 }
+
 
 int get_graph_max_id(Graph G) {
 	int max_id = 0;
@@ -678,7 +688,7 @@ double topological_get_minimum_cost(Graph G, int v2){
 int _has_path_flag;
 int _has_path_t;
 void _has_path(Graph G, int v){
-	if(v==_has_path_t){
+	if(v ==_has_path_t){
 		_has_path_flag = true;
 	}
 }
@@ -793,4 +803,58 @@ int get_related_vertices_by_length(Graph G, int v, int length, int *output){
 			output[total++] = v2;
 	}
 	return total;
+}
+
+int _count_connected_vertices(Graph G, int v){
+	int total = 0;
+	int v2;
+	JRB node;
+	jrb_traverse(node, G.vertices){
+		v2 = jval_i(node -> key);
+		if(has_path(G, v, v2))
+			total++;
+	}
+	return total;
+}
+
+int get_connected_vertices(Graph G, int v, int *output){
+	int total = 0;
+	int v2;
+	JRB node;
+	jrb_traverse(node, G.vertices){
+		v2 = jval_i(node -> key);
+		if(has_path(G, v, v2))
+			output[total++] = v2;
+	}
+	return total;
+}
+
+int get_maximum_connected_part(Graph G, int *output){
+	// initialize
+	int n, i, *queue;
+	n = count_vertices(G);
+	queue = (int*)malloc(sizeof(int)*n);
+	get_vertices_id(G, queue);
+
+	log("coredump here\n");
+
+	// get one vertex in the flow (m_v)
+	// with max number of element m
+	int m=0, m_v=0, temp;
+	for(i=0; i<n; i++){
+		log("before , temp=%d queue[%d]=%d m_v=%d m=%d\n", temp, i, queue[i], m_v, m);
+		temp = _count_connected_vertices(G, queue[i]);
+		if(m < temp){
+			m_v = queue[i];
+			m = temp;
+		}
+		log("after , temp=%d queue[%d]=%d m_v=%d m=%d\n", temp, i, queue[i], m_v, m);
+	}
+
+	// copy the flow to output
+	int res = get_connected_vertices(G, m_v, output);
+
+	// free all and exit
+	free(queue);
+	return res;
 }
