@@ -15,6 +15,7 @@ void menu(){
 	puts("1) Import data to graph");
 	puts("2) Check cyclic property");
 	puts("3) Check subject prerequisite");
+	puts("4) Print all path");
 	puts("5) Print subjects sort by number of prerequisites ascending");
 	puts("6) Print subjects order sort by topo");
 	puts("7) Quit");
@@ -78,26 +79,6 @@ int _asc_cmp(const void *a, const void *b){
 		return -1;
 	else
 		return 0;
-}
-
-Dllist _topological_queue;
-
-void _get_topological_id(Graph G, int v){
-	// log("%s->", get_vertex_val(G, v));
-	dll_append(_topological_queue, new_jval_i(v));
-}
-
-void get_topological_queue(Graph G, int *output, int *length){
-	// log("[lib] at get_topological_queue:\n");
-	_topological_queue = new_dllist();
-	topological_sort(G, _get_topological_id);
-	int i, total=0;
-	Dllist ptr;
-	dll_traverse(ptr, _topological_queue)
-		output[total++] = jval_i(ptr->val);
-	free_dllist(_topological_queue);
-	*length = total;
-	// log("\n");
 }
 
 int count_prerequisites(Graph G, int v){

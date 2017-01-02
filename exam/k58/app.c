@@ -123,6 +123,9 @@ int main(){
 					scanf("%c", &ctn);
 				}
 				break;
+			case 4:
+				print_all_path(G, get_vertex_id(G, "0"), get_vertex_id(G, "4"));
+				break;
 			case 5:
 				printf("[+] List of subjects sort by number of prerequisites ascending:\n");
 				output = (int*)malloc(sizeof(int ) * count_vertices(G));
