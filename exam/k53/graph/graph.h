@@ -7,9 +7,9 @@
 #define false 0
 #define UNDIRECTED 0
 #define DIRECTED 1
-#define INFINITY 2147483647
+#define INFINITY 2000000000
 #define UNDEFINED -1
-// #define log(...) printf("")	
+#define log(...) printf("")	
 #ifndef log
 	#define log(...) printf("[+]" __VA_ARGS__)
 #endif
@@ -29,12 +29,15 @@ int get_vertices_id(Graph G, int *output);
 
 void add_edge(Graph G, int v, int v2, double weight, short mode);
 int has_edge(Graph G, int v, int v2);
-double get_edge_val(Graph G, int v, int v2);
+double get_edge_weight(Graph G, int v, int v2);
 int count_edges(Graph G, short mode);
 
 int is_adjacent(Graph G, int v, int v2);
 int get_adjacent_vertices(Graph G, int v, int *output);
 int count_adjacent(Graph G, int v);
+int get_adjacent_vertices_in_edge(Graph G, int v2, int *output);
+int get_adjacent_vertices_out_edge(Graph G, int v, int *output);
+void get_vertices_sorted_by_adjacent(Graph G, int *output);
 
 int out_degree(Graph G, int v, int *output);
 int in_degree(Graph G, int v, int *output);
@@ -51,6 +54,20 @@ int is_cyclic(Graph G);
 
 void topological_sort(Graph G, void (*visited_func)(Graph, int));
 void get_topological_queue(Graph G, int *output, int *length);
-int count_prerequisites(Graph G, int v);
+int count_prequisites(Graph G, int v);
 
+int has_path(Graph G, int s, int t);
+int get_related_vertices(Graph G, int v, int *output);
 double shortest_path(Graph G, int s, int t, int* path, double* length);
+double topological_get_minimum_cost(Graph G, int v2);
+
+int shortest_path_length(Graph G, int s, int t);
+int get_path_length(Graph G, int *path);
+int get_related_vertices_sorted_by_path_length(Graph G, int v, int *output);
+int get_related_vertices_by_length(Graph G, int v, int length, int *output);
+
+double get_path_weight(Graph G, int *path, int total);
+double get_path_weight_v2(Graph G, int *path);
+double shortest_path_weight(Graph G, int s, int t);
+int get_related_vertices_sorted_by_path_weight(Graph G, int v, int *output);
+
